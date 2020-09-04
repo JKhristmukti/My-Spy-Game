@@ -1,8 +1,8 @@
 var spy;
-var spyimg;
+var spyimg,spy2img;
 var coinimg;
 var ground;
-
+var Coins = [];
 var guard = [];
 var Ob = [];
 var guard1;
@@ -21,6 +21,7 @@ function preload(){
     bgimg = loadImage("BG.jpg");
     bg2img = loadImage("BG - Copy.jpg");
     spyimg = loadImage("spy1.jpg");
+    spy2img = loadImage("spy2.jpg");
     coinimg = loadImage("coin.jpg");
     guard1 = loadImage("guards-1.jpg");
     guard2 = loadImage("guards-2.jpg");
@@ -57,6 +58,8 @@ function draw() {
 
   spawnCoins();
 
+  changeImagesWhenNeeded();
+
   if(bg.x<40){
       bg.x = 400;
   }
@@ -87,7 +90,7 @@ function draw() {
   spy.collide(ground);
   spy.collide(Ob);
 
-console.log(spy.y);
+  console.log(spy.y);
 
   drawSprites();
 }
@@ -106,7 +109,7 @@ function spawnObstacles(){
 }
 
 function spawnobstacles2(){
-  if(frameCount%80===0){
+  if(frameCount%75===0){
     var r = random(0,100);
     var r2 = random(0,75);
       var obs = createSprite(800,350,20,50);
@@ -119,19 +122,20 @@ function spawnobstacles2(){
 }
 
 function spawnCoins(){
-    if(frameCount%320===0){
-        var r = random(150,300);
+    if(frameCount%350===0){
+        var r = random(80,300);
         var coin = createSprite(800,200,20,20);
         coin.y = r;
-        coin.velocity.x = -2;
+        coin.velocity.x = -3;
         coin.addImage(coinimg);
         coin.scale = 0.3;
+        Coins.push(coin);
     }
 }
 
 function spawnEnemies(){
-  if(frameCount%280===0){
-    var r = random(2,4);
+  if(frameCount%290===0){
+    var r = random(3,5);
     var enemy = createSprite(400,400,50,50);
     enemy.x = random(600,800);
     enemy.y = random(250,350);
@@ -161,5 +165,14 @@ function spawnEnemies(){
 function keyPressed(){
     if(keyCode===32 && spy.y>200){
         spy.velocity.y = -15;
+        changeImagesWhenNeeded();
     }
+}
+
+function changeImagesWhenNeeded(){
+  if(spy.collide(Ob) && spy.y<347){
+    spy.addImage(spy2img);
+  }else{
+    spy.addImage(spyimg);
+  }
 }
