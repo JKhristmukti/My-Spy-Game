@@ -15,10 +15,11 @@ var guard7;
 
 var g1,g2,g3,g4,g5,g6,g7;
 
-var bgimg;
+var bgimg,bg2img,bg,bg2;
 
 function preload(){
     bgimg = loadImage("BG.jpg");
+    bg2img = loadImage("BG - Copy.jpg");
     spyimg = loadImage("spy1.jpg");
     coinimg = loadImage("coin.jpg");
     guard1 = loadImage("guards-1.jpg");
@@ -33,29 +34,43 @@ function preload(){
 function setup() {
   createCanvas(800,400);
 
+  bg = createSprite(400,200,800,400);
+  bg.velocity.x = -3;
+  bg.addImage(bgimg);
+  bg.scale = 3.1;
+
+  bg2 = createSprite(1200,227,800,400);
+  bg2.velocity.x = -3;
+  bg2.addImage(bg2img);
+  bg2.scale = 3.1;
+
   spy = createSprite(50,330,5,5);
   spy.addImage(spyimg);
   spy.scale = 0.3;
 
-  ground = createSprite(200,390,1600,10);
+  ground = createSprite(200,395,1600,10);
   ground.velocity.x = -3;
 }
 
 function draw() {
-  background(bgimg);
+  background("white");
 
   spawnCoins();
+
+  if(bg.x<0){
+      bg.x = 400;
+  }
+
+  if(bg2.x<800){
+      bg2.x = 1200;
+  }
 
   if(ground.x<0){
     ground.x = ground.width/2;
   }
 
-  if(spy.x<50){
-      spy.x = 50; 
-  }
-
-  if(spy.y>343.05){
-      spy.y = 342;
+  if(spy.y>348){
+      spy.y = 347.25;
   }
 
   spy.velocity.y = spy.velocity.y + 0.8;
@@ -68,11 +83,13 @@ function draw() {
   spy.collide(ground);
   spy.collide(Ob);
 
+console.log(spy.y);
+
   drawSprites();
 }
 
 function spawnObstacles(){
-    if(frameCount%100===0){
+    if(frameCount%120===0){
         var r = random(0,100);
         var r2 = random(0,75);
           var obs = createSprite(800,350,20,50);
@@ -85,7 +102,7 @@ function spawnObstacles(){
 }
 
 function spawnobstacles2(){
-  if(frameCount%100===0){
+  if(frameCount%80===0){
     var r = random(0,100);
     var r2 = random(0,75);
       var obs = createSprite(800,350,20,50);
@@ -98,7 +115,7 @@ function spawnobstacles2(){
 }
 
 function spawnCoins(){
-    if(frameCount%300===0){
+    if(frameCount%320===0){
         var r = random(150,300);
         var coin = createSprite(800,200,20,20);
         coin.y = r;
@@ -109,7 +126,7 @@ function spawnCoins(){
 }
 
 function spawnEnemies(){
-  if(frameCount%220===0){
+  if(frameCount%280===0){
     var r = random(2,4);
     var enemy = createSprite(400,400,50,50);
     enemy.x = random(600,800);
@@ -122,15 +139,15 @@ function spawnEnemies(){
               break;
         case 2: enemy.addImage(guard2);
               break;
-        case 3: enemy.addImage(guard1);
+        case 3: enemy.addImage(guard3);
+              break
+        case 4: enemy.addImage(guard4);
               break;
-        case 4: enemy.addImage(guard1);
+        case 5: enemy.addImage(guard5);
               break;
-        case 5: enemy.addImage(guard1);
+        case 6: enemy.addImage(guard6);
               break;
-        case 6: enemy.addImage(guard1);
-              break;
-        case 7: enemy.addImage(guard1);
+        case 7: enemy.addImage(guard7);
               break;
     }
     enemy.scale = 0.3;
