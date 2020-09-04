@@ -39,7 +39,7 @@ function setup() {
   bg.addImage(bgimg);
   bg.scale = 3.1;
 
-  bg2 = createSprite(1200,227,800,400);
+  bg2 = createSprite(1130,200,800,400);
   bg2.velocity.x = -3;
   bg2.addImage(bg2img);
   bg2.scale = 3.1;
@@ -57,12 +57,12 @@ function draw() {
 
   spawnCoins();
 
-  if(bg.x<0){
+  if(bg.x<40){
       bg.x = 400;
   }
 
-  if(bg2.x<800){
-      bg2.x = 1200;
+  if(bg2.x<770){
+      bg2.x = 1130;
   }
 
   if(ground.x<0){
