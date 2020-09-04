@@ -69,6 +69,10 @@ function draw() {
     ground.x = ground.width/2;
   }
 
+  if(spy.x<50){
+      spy.x = 50;
+  }
+
   if(spy.y>348){
       spy.y = 347.25;
   }
