@@ -1,10 +1,10 @@
 var spy;
-var spyimg,spy2img;
+var spyimg,spy2img,end;
 var coinimg;
-var ground;
-var Coins = [];
-var guard = [];
-var Ob = [];
+var ground,groundimg;
+var Coins,coincount;
+var Guards;
+var Ob;
 var guard1;
 var guard2;
 var guard3;
@@ -13,15 +13,21 @@ var guard5;
 var guard6;
 var guard7;
 
-var g1,g2,g3,g4,g5,g6,g7;
+var PLAY = 0;
+var END = 1;
+var gameState;
+
+var score;
 
 var bgimg,bg2img,bg,bg2;
 
 function preload(){
     bgimg = loadImage("BG.jpg");
     bg2img = loadImage("BG - Copy.jpg");
+    groundimg = loadImage("base.png");
     spyimg = loadImage("spy1.jpg");
     spy2img = loadImage("spy2.jpg");
+    end = loadImage("spy-hurt.jpg");
     coinimg = loadImage("coin.jpg");
     guard1 = loadImage("guards-1.jpg");
     guard2 = loadImage("guards-2.jpg");
@@ -49,48 +55,96 @@ function setup() {
   spy.addImage(spyimg);
   spy.scale = 0.3;
 
-  ground = createSprite(200,395,1600,10);
+  ground = createSprite(200,510,1600,10);
   ground.velocity.x = -3;
+  ground.addImage(groundimg);
+  ground.scale = 8.0;
+
+  Coins = new Group();
+  coincount = 0;
+
+  Guards = new Group();
+
+  Ob = new Group();
+
+  gameState = PLAY;
+
+  score = 0;
 }
 
 function draw() {
-  background("white");
+  background("red");
 
-  spawnCoins();
+//start of the running part
+  if(gameState===PLAY){
+    spawnCoins();
+    collectCoins();
 
-  changeImagesWhenNeeded();
+    changeImagesWhenNeeded();
 
-  if(bg.x<40){
-      bg.x = 400;
+    score = score+1;
+
+    if(bg.x<40){
+        bg.x = 400;
+    }
+
+    if(bg2.x<770){
+        bg2.x = 1130;
+    }
+
+    if(ground.x<0){
+      ground.x = ground.width/2;
+    }
+
+    if(spy.x<50){
+        spy.x = 50;
+    }
+
+    if(spy.y>348){
+        spy.y = 347.25;
+    }
+
+    spy.velocity.y = spy.velocity.y + 0.8;
+
+    spawnObstacles();
+    spawnobstacles2();
+
+    spawnEnemies();
+
+    if(Coins.isTouching(spy)){
+        Coins.destroyEach();
+        coincount = coincount+1;
+    }
+
+    spy.collide(ground);
+    spy.collide(Ob);
+
+    if(coincount===0 && Guards.isTouching(spy)){
+        gameState = END;
+    }
+    //end of the running part
   }
 
-  if(bg2.x<770){
-      bg2.x = 1130;
+  //start of the ending part
+  if(gameState===END){
+    End();
+    spy.addImage(end);
+    spy.x = 400;
+    spy.y = 200;
+    spy.scale = 0.5;
+    image(guard1,600,230,120,120);
+    image(guard2,200,240,140,160);
+    image(guard3,620,120,100,100);
+    image(guard4,160,80,100,110);
+    image(guard5,450,100,70,70);
+    image(guard6,380,30,70,70);
+    image(guard7,480,300,100,100);
+    score = score+0;
+
+    textSize(30);
+    text("Score: "+ score,500,50);
   }
-
-  if(ground.x<0){
-    ground.x = ground.width/2;
-  }
-
-  if(spy.x<50){
-      spy.x = 50;
-  }
-
-  if(spy.y>348){
-      spy.y = 347.25;
-  }
-
-  spy.velocity.y = spy.velocity.y + 0.8;
-
-  spawnObstacles();
-  spawnobstacles2();
-
-  spawnEnemies();
-
-  spy.collide(ground);
-  spy.collide(Ob);
-
-  console.log(spy.y);
+  //end of the ending part
 
   drawSprites();
 }
@@ -99,12 +153,12 @@ function spawnObstacles(){
     if(frameCount%120===0){
         var r = random(0,100);
         var r2 = random(0,75);
-          var obs = createSprite(800,350,20,50);
-          obs.velocity.x = -3;
-          obs.y = random(200,280);
-          obs.width = r;
-          obs.height = r2;
-          Ob.push(obs);
+        var obs = createSprite(800,350,20,50);
+        obs.velocity.x = -3;
+        obs.y = random(200,280);
+        obs.width = r;
+        obs.height = r2;
+        Ob.add(obs);
     }
 }
 
@@ -117,19 +171,19 @@ function spawnobstacles2(){
       obs.y = random(320,400);
       obs.width = r;
       obs.height = r2;
-      Ob.push(obs);
+      Ob.add(obs);
   }
 }
 
 function spawnCoins(){
-    if(frameCount%350===0){
+    if(frameCount%335===0){
         var r = random(80,300);
         var coin = createSprite(800,200,20,20);
         coin.y = r;
         coin.velocity.x = -3;
         coin.addImage(coinimg);
         coin.scale = 0.3;
-        Coins.push(coin);
+        Coins.add(coin);
     }
 }
 
@@ -159,6 +213,7 @@ function spawnEnemies(){
               break;
     }
     enemy.scale = 0.3;
+    Guards.add(enemy);
   }
 }
 
@@ -175,4 +230,38 @@ function changeImagesWhenNeeded(){
   }else{
     spy.addImage(spyimg);
   }
+}
+
+function collectCoins(){
+    if(coincount>0){
+        if(Guards.isTouching(spy)){
+            Guards.destroyEach();
+            coincount = coincount-1;
+        }
+
+        if(keyCode===107){
+            Ob.destroyEach();
+            coincount = coincount-1;
+        }
+    }
+}
+
+function End(){
+    bg.destroy();
+    bg2.destroy();
+    ground.destroy();
+
+    Coins.setVelocityEach(0,0);
+    Guards.setVelocityEach(0,0);
+    Ob.setVelocityEach(0,0);
+
+    Coins.destroyEach();
+    Guards.destroyEach();
+    Ob.destroyEach();
+
+    if(keyCode===32){
+      spy.velocity.x = 0;
+      spy.velocity.y = 0;
+    }
+  
 }
