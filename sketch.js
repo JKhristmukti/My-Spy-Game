@@ -141,6 +141,77 @@ function draw() {
     image(guard7,480,300,100,100);
     score = score+0;
 
+    textSize(25);
+    if(score<=550){
+        text("DUDE!Can you jump?!",10,220);
+    }
+
+    if(score>550 && score<=1050){
+        text("OH NO!SOOO close?!",10,220);
+        text("IMPROVEMENT!",0,280);
+    }
+
+    if(score>1050 && score<=2050){
+        text("Just the coins that's all!",10,220);
+    }
+
+    if(score>2050 && score<=3050){
+        text("You just got lucky in this one",10,220);
+    }
+
+    if(score>3050 && score<=4050){
+        text("It's an Average Average score",10,220);
+    }
+
+    if(score>4050 && score<=5050){
+      text("Average score!!",10,220);
+    }
+
+    if(score>5050 && score<=6050){
+      text("OK Alright! You ain't a NOOB",10,220);
+    }
+
+    if(score>6050 && score<=8050){
+      text("OK, confession- you're great",10,220);
+    }
+
+    if(score>8050 && score<=10050){
+      text("Wonderful at it! BUT Not Pro",10,220);
+    }
+
+    if(score>10050 && score<=12050){
+      text("Great Score, AVERAGE Pro!",10,220);
+    }
+
+    if(score>12050 && score<=14050){
+      text("WHAT!Don't dare to do it again!",0,220);
+      text("Kidding!Dare ya...",0,280);
+      text("Do it again!",0,320);
+      text("If you can,PRO!!!",0,360);
+    }
+
+    if(score>14050 && score<=16050){
+      text("Yup!You're a true spy-mentally",0,220);
+      text("Keep it up!!",0,280);
+    }
+
+    if(score>16050 && score<=18050){
+      text("Super Game,Advanced PRO!!!",0,220);
+    }
+
+    if(score>18050 && score<=20050){
+      text("Superhuman,BUT not SUPERHUMAN",0,220);
+    }
+
+    if(score>20050 && score<=25000){
+      text("ADVANCED!!PRO!!SPY!!",0,220);
+    }
+
+    if(score>25000){
+      text("SUPERHUMAN!!You're a",0,220);
+      text("TRUE!SPY1PRO!!",0,280);
+    }
+
     textSize(30);
     text("Score: "+ score,500,50);
   }
@@ -177,7 +248,7 @@ function spawnobstacles2(){
 
 function spawnCoins(){
     if(frameCount%335===0){
-        var r = random(80,300);
+        var r = random(30,350);
         var coin = createSprite(800,200,20,20);
         coin.y = r;
         coin.velocity.x = -3;
@@ -217,11 +288,18 @@ function spawnEnemies(){
   }
 }
 
-function keyPressed(){
-    if(keyCode===32 && spy.y>200){
+function mousePressed(){
+    if(spy.y>200){
         spy.velocity.y = -15;
         changeImagesWhenNeeded();
     }
+}
+
+function mouseReleased(){
+  if(spy.y>200){
+    spy.velocity.y = -15;
+    changeImagesWhenNeeded();
+  }
 }
 
 function changeImagesWhenNeeded(){
@@ -263,5 +341,4 @@ function End(){
       spy.velocity.x = 0;
       spy.velocity.y = 0;
     }
-  
 }
