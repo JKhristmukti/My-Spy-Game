@@ -93,15 +93,8 @@ function draw() {
         }
     }
 
-    if(bg2.x<770){
-        bg2.x = 1130;
-        if(coincount>0){
-          bg2.velocity.x = -(3 + 90*coincount/100);
-        }else{
-          bg2.velocity.x = -3;
-        }
-    }
-
+        bg2.x = bg.x+730;
+      
     if(ground.x<0){
       ground.x = ground.width/2;
     }
