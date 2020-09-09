@@ -86,10 +86,20 @@ function draw() {
 
     if(bg.x<40){
         bg.x = 400;
+        if(coincount>0){
+          bg.velocity.x = -(3 + 90*coincount/100);
+        }else{
+          bg.velocity.x = -3;
+        }
     }
 
     if(bg2.x<770){
         bg2.x = 1130;
+        if(coincount>0){
+          bg2.velocity.x = -(3 + 90*coincount/100);
+        }else{
+          bg2.velocity.x = -3;
+        }
     }
 
     if(ground.x<0){
@@ -209,7 +219,7 @@ function draw() {
 
     if(score>25000){
       text("SUPERHUMAN!!You're a",0,220);
-      text("TRUE!SPY1PRO!!",0,280);
+      text("TRUE!SPY!PRO!!",0,280);
     }
 
     textSize(30);
@@ -225,7 +235,11 @@ function spawnObstacles(){
         var r = random(0,100);
         var r2 = random(0,75);
         var obs = createSprite(800,350,20,50);
-        obs.velocity.x = -3;
+        if(coincount>0){
+          obs.velocity.x = -(3 + 90*coincount/100);
+        }else{
+          obs.velocity.x = -3;
+        }
         obs.y = random(200,280);
         obs.width = r;
         obs.height = r2;
@@ -238,7 +252,11 @@ function spawnobstacles2(){
     var r = random(0,100);
     var r2 = random(0,75);
       var obs = createSprite(800,350,20,50);
-      obs.velocity.x = -3;
+      if(coincount>0){
+        obs.velocity.x = -(3 + 90*coincount/100);
+      }else{
+        obs.velocity.x = -3;
+      }
       obs.y = random(320,400);
       obs.width = r;
       obs.height = r2;
@@ -247,11 +265,15 @@ function spawnobstacles2(){
 }
 
 function spawnCoins(){
-    if(frameCount%335===0){
+    if(frameCount%500===0){
         var r = random(30,350);
         var coin = createSprite(800,200,20,20);
         coin.y = r;
-        coin.velocity.x = -3;
+        if(coincount>0){
+          coin.velocity.x = -(3 + 90*coincount/100);
+        }else{
+          coin.velocity.x = -3;
+        }
         coin.addImage(coinimg);
         coin.scale = 0.3;
         Coins.add(coin);
@@ -259,12 +281,16 @@ function spawnCoins(){
 }
 
 function spawnEnemies(){
-  if(frameCount%290===0){
+  if(frameCount%260===0){
     var r = random(3,5);
     var enemy = createSprite(400,400,50,50);
     enemy.x = random(600,800);
     enemy.y = random(250,350);
-    enemy.velocity.x = -r;
+    if(coincount>0){
+      enemy.velocity.x = -(r + 90*coincount/100);
+    }else{
+      enemy.velocity.x = -r;
+    };
     var rand = Math.round(random(1,7));
 
     switch(rand){
