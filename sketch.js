@@ -14,8 +14,9 @@ var guard6;
 var guard7;
 var clash;
 
-var PLAY = 0;
-var END = 1;
+var START = 0;
+var PLAY = 1;
+var END = 2;
 var endSound;
 
 var life;
@@ -50,24 +51,6 @@ function preload(){
 function setup() {
   createCanvas(800,400);
 
-  bg = createSprite(400,200,800,400);
-  bg.velocity.x = -3;
-  bg.addImage(bgimg);
-  bg.scale = 3.1;
-
-  bg2 = createSprite(1130,200,800,400);
-  bg2.velocity.x = -3;
-  bg2.addImage(bg2img);
-  bg2.scale = 3.1;
-
-  spy = createSprite(50,330,5,5);
-  spy.addImage(spyimg);
-  spy.scale = 0.3;
-
-  ground = createSprite(200,510,1600,10);
-  ground.addImage(groundimg);
-  ground.scale = 8.0;
-
   Coins = new Group();
   coincount = 0;
 
@@ -75,7 +58,7 @@ function setup() {
 
   Ob = new Group();
 
-  gameState = PLAY;
+  gameState = START;
 
   score = 0;
 
@@ -89,7 +72,7 @@ function draw() {
   if(gameState===PLAY){
     spawnCoins();
     changeImagesWhenNeeded();
-
+    
     score = score+1;
 
     if(bg.x<40){
@@ -129,7 +112,7 @@ function draw() {
     }
 
     spy.collide(ground);
-    spy.collide(Ob);
+    Ob.collide(spy);
 
     if(Guards.isTouching(spy) && life>0){
         life=life-1;
@@ -325,6 +308,10 @@ function spawnEnemies(){
 }
 
 function mousePressed(){
+  if(gameState===START){
+    gameState=PLAY;
+    create();
+  }
   if(gameState===PLAY){
     if(spy.y>200){
         spy.velocity.y = -15;
@@ -334,6 +321,10 @@ function mousePressed(){
 }
 
 function mouseReleased(){
+  if(gameState===START){
+    gameState=PLAY;
+    create();
+  }
   if(gameState===PLAY){
     if(spy.y>200){
         spy.velocity.y = -15;
@@ -344,11 +335,31 @@ function mouseReleased(){
 }
 
 function changeImagesWhenNeeded(){
-  if(spy.collide(Ob) && spy.y<347){
+  if(Ob.collide(spy) && spy.y<347){
     spy.addImage(spy2img);
   }else{
     spy.addImage(spyimg);
   }
+}
+
+function create(){
+  bg = createSprite(400,200,800,400);
+  bg.velocity.x = -3;
+  bg.addImage(bgimg);
+  bg.scale = 3.1;
+
+  bg2 = createSprite(1130,200,800,400);
+  bg2.velocity.x = -3;
+  bg2.addImage(bg2img);
+  bg2.scale = 3.1;
+
+  spy = createSprite(50,330,5,5);
+  spy.addImage(spyimg);
+  spy.scale = 0.3;
+
+  ground = createSprite(200,510,1600,10);
+  ground.addImage(groundimg);
+  ground.scale = 8.0;
 }
 
 function End(){
