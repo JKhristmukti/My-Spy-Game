@@ -1,8 +1,8 @@
 var spy;
-var spyimg,spy2img,end;
+var spyimg,spy2img,end,jump;
 var coinimg;
 var ground,groundimg;
-var Coins,coincount;
+var Coins,coincount,coinCollected;
 var Guards;
 var Ob;
 var guard1;
@@ -12,9 +12,14 @@ var guard4;
 var guard5;
 var guard6;
 var guard7;
+var clash;
 
 var PLAY = 0;
 var END = 1;
+var endSound;
+
+var life;
+
 var gameState;
 
 var score;
@@ -28,7 +33,10 @@ function preload(){
     spyimg = loadImage("spy1.jpg");
     spy2img = loadImage("spy2.jpg");
     end = loadImage("spy-hurt.jpg");
+    endSound = loadSound("die-sound.mp3");
+    jump = loadSound("jump-sound.mp3");
     coinimg = loadImage("coin.jpg");
+    coinCollected = loadSound("collected coin-sound.mp3");
     guard1 = loadImage("guards-1.jpg");
     guard2 = loadImage("guards-2.jpg");
     guard3 = loadImage("guards-3.jpg");
@@ -36,6 +44,7 @@ function preload(){
     guard5 = loadImage("guards-5.jpg");
     guard6 = loadImage("guards-6.jpg");
     guard7 = loadImage("guards-7.jpg");
+    clash = loadSound("clash-sound.mp3");
 }
 
 function setup() {
@@ -56,7 +65,6 @@ function setup() {
   spy.scale = 0.3;
 
   ground = createSprite(200,510,1600,10);
-  ground.velocity.x = -3;
   ground.addImage(groundimg);
   ground.scale = 8.0;
 
@@ -70,6 +78,8 @@ function setup() {
   gameState = PLAY;
 
   score = 0;
+
+  life = 3;
 }
 
 function draw() {
@@ -78,8 +88,6 @@ function draw() {
 //start of the running part
   if(gameState===PLAY){
     spawnCoins();
-    collectCoins();
-
     changeImagesWhenNeeded();
 
     score = score+1;
@@ -117,14 +125,22 @@ function draw() {
     if(Coins.isTouching(spy)){
         Coins.destroyEach();
         coincount = coincount+1;
+        coinCollected.play();
     }
 
     spy.collide(ground);
     spy.collide(Ob);
 
-    if(coincount===0 && Guards.isTouching(spy)){
-        gameState = END;
+    if(Guards.isTouching(spy) && life>0){
+        life=life-1;
+        Guards.destroyEach();
+        clash.play();
+        if(life===0){
+          gameState=END;
+          endSound.play();
+        }
     }
+
     //end of the running part
   }
 
@@ -135,7 +151,6 @@ function draw() {
     spy.x = 400;
     spy.y = 200;
     spy.scale = 0.5;
-    image(guard1,600,230,120,120);
     image(guard2,200,240,140,160);
     image(guard3,620,120,100,100);
     image(guard4,160,80,100,110);
@@ -144,73 +159,75 @@ function draw() {
     image(guard7,480,300,100,100);
     score = score+0;
 
+    var finalscore = score+coincount;
+
     textSize(25);
-    if(score<=550){
+    if(finalscore<=550){
         text("DUDE!Can you jump?!",10,220);
     }
 
-    if(score>550 && score<=1050){
+    if(finalscore>550 && score<=1050){
         text("OH NO!SOOO close?!",10,220);
         text("IMPROVEMENT!",0,280);
     }
 
-    if(score>1050 && score<=2050){
+    if(finalscore>1050 && score<=2050){
         text("Just the coins that's all!",10,220);
     }
 
-    if(score>2050 && score<=3050){
+    if(finalscore>2050 && score<=3050){
         text("You just got lucky in this one",10,220);
     }
 
-    if(score>3050 && score<=4050){
+    if(finalscore>3050 && score<=4050){
         text("It's an Average Average score",10,220);
     }
 
-    if(score>4050 && score<=5050){
+    if(finalscore>4050 && score<=5050){
       text("Average score!!",10,220);
     }
 
-    if(score>5050 && score<=6050){
+    if(finalscore>5050 && score<=6050){
       text("OK Alright! You ain't a NOOB",10,220);
     }
 
-    if(score>6050 && score<=8050){
+    if(finalscore>6050 && score<=8050){
       text("OK, confession- you're great",10,220);
     }
 
-    if(score>8050 && score<=10050){
+    if(finalscore>8050 && score<=10050){
       text("Wonderful at it! BUT Not Pro",10,220);
     }
 
-    if(score>10050 && score<=12050){
+    if(finalscore>10050 && score<=12050){
       text("Great Score, AVERAGE Pro!",10,220);
     }
 
-    if(score>12050 && score<=14050){
+    if(finalscore>12050 && score<=14050){
       text("WHAT!Don't dare to do it again!",0,220);
       text("Kidding!Dare ya...",0,280);
       text("Do it again!",0,320);
       text("If you can,PRO!!!",0,360);
     }
 
-    if(score>14050 && score<=16050){
+    if(finalscore>14050 && score<=16050){
       text("Yup!You're a true spy-mentally",0,220);
       text("Keep it up!!",0,280);
     }
 
-    if(score>16050 && score<=18050){
+    if(finalscore>16050 && score<=18050){
       text("Super Game,Advanced PRO!!!",0,220);
     }
 
-    if(score>18050 && score<=20050){
+    if(finalscore>18050 && score<=20050){
       text("Superhuman,BUT not SUPERHUMAN",0,220);
     }
 
-    if(score>20050 && score<=25000){
+    if(finalscore>20050 && score<=25000){
       text("ADVANCED!!PRO!!SPY!!",0,220);
     }
 
-    if(score>25000){
+    if(finalscore>25000){
       text("SUPERHUMAN!!You're a",0,220);
       text("TRUE!SPY!PRO!!",0,280);
     }
@@ -308,16 +325,21 @@ function spawnEnemies(){
 }
 
 function mousePressed(){
+  if(gameState===PLAY){
     if(spy.y>200){
         spy.velocity.y = -15;
         changeImagesWhenNeeded();
     }
+  }
 }
 
 function mouseReleased(){
-  if(spy.y>200){
-    spy.velocity.y = -15;
-    changeImagesWhenNeeded();
+  if(gameState===PLAY){
+    if(spy.y>200){
+        spy.velocity.y = -15;
+        changeImagesWhenNeeded();
+        jump.play();
+    }
   }
 }
 
@@ -327,20 +349,6 @@ function changeImagesWhenNeeded(){
   }else{
     spy.addImage(spyimg);
   }
-}
-
-function collectCoins(){
-    if(coincount>0){
-        if(Guards.isTouching(spy)){
-            Guards.destroyEach();
-            coincount = coincount-1;
-        }
-
-        if(keyCode===107){
-            Ob.destroyEach();
-            coincount = coincount-1;
-        }
-    }
 }
 
 function End(){
@@ -355,9 +363,4 @@ function End(){
     Coins.destroyEach();
     Guards.destroyEach();
     Ob.destroyEach();
-
-    if(keyCode===32){
-      spy.velocity.x = 0;
-      spy.velocity.y = 0;
-    }
 }
