@@ -130,7 +130,7 @@ function draw() {
     bg.scale = 3.1;
     bg2.scale = 3.1;
 
-    bg2.x = bg.x+720;
+    bg2.x = bg.x+696;
     bg2.y = bg.y-28;
 
     if(coincount>0){
@@ -322,20 +322,17 @@ function spawnobstacles2(){
 function spawnCoins(){
     if(frameCount%400===0){
         var r = random(30,350);
-        var r2 = random(5,10);
-        for (i=0;i<r2;i++){
-          var coin = createSprite(800,200,20,20);
-          coin.y = r;
-          if(coincount>0){
-            coin.velocity.x = -(3 + 90*coincount/100);
-          }else{
-            coin.velocity.x = -3;
-          }
-          coin.addImage(coinimg);
-          coin.scale = 0.3;
-          Coins.add(coin);
-          coin.x = coin.x+100;
+        var coin = createSprite(800,200,20,20);
+        coin.y = r;
+        if(coincount>0){
+          coin.velocity.x = -(3 + 90*coincount/100);
+        }else{
+          coin.velocity.x = -3;
         }
+        coin.addImage(coinimg);
+        coin.scale = 0.3;
+        Coins.add(coin);
+        coin.x = coin.x+100;
     }
 }
 
