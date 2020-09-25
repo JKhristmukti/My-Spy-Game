@@ -1,5 +1,5 @@
 var spy;
-var spyimg,spy2img,end,jump;
+var spyimg,spy2img,spy3img,end,jump;
 var coinimg;
 var ground,groundimg;
 var Coins,coincount,coinCollected;
@@ -13,9 +13,11 @@ var guard5;
 var guard6;
 var guard7;
 var clash;
+var homeimg;
 
-var PLAY = 0;
-var END = 1;
+var START = 0;
+var PLAY = 1;
+var END = 2;
 var endSound;
 
 var life;
@@ -24,14 +26,17 @@ var gameState;
 
 var score;
 
+var hr;
+
 var bgimg,bg2img,bg,bg2;
 
 function preload(){
+    homeimg = loadImage("HomeBg.jpg");
     bgimg = loadImage("BG.jpg");
-    bg2img = loadImage("BG - Copy.jpg");
     groundimg = loadImage("base.png");
     spyimg = loadImage("spy1.jpg");
     spy2img = loadImage("spy2.jpg");
+    spy3img = loadImage("spy3.jpg");
     end = loadImage("spy-hurt.jpg");
     endSound = loadSound("die-sound.mp3");
     jump = loadSound("jump-sound.mp3");
@@ -49,24 +54,22 @@ function preload(){
 
 function setup() {
   createCanvas(800,400);
-
-  bg = createSprite(400,200,800,400);
-  bg.velocity.x = -3;
+  bg = createSprite(363,200,800,400);
+  bg.velocity.x = 0;
   bg.addImage(bgimg);
   bg.scale = 3.1;
 
-  bg2 = createSprite(1130,200,800,400);
-  bg2.velocity.x = -3;
-  bg2.addImage(bg2img);
+  bg2 = createSprite(1003,200,800,400);
+  bg2.addImage(bgimg);
   bg2.scale = 3.1;
-
-  spy = createSprite(50,330,5,5);
-  spy.addImage(spyimg);
-  spy.scale = 0.3;
 
   ground = createSprite(200,510,1600,10);
   ground.addImage(groundimg);
   ground.scale = 8.0;
+
+  spy = createSprite(50,330,5,5);
+  spy.addImage(spyimg);
+  spy.scale = 0.3;
 
   Coins = new Group();
   coincount = 0;
@@ -75,33 +78,72 @@ function setup() {
 
   Ob = new Group();
 
-  gameState = PLAY;
+  gameState = START;
 
   score = 0;
 
   life = 3;
+
+  hr = hour();
 }
 
 function draw() {
-  background("red");
+  background("blue");
+
+//start of the start part
+  if(gameState===START){
+      if(hr>=6 && hr<=21){
+        bg.addImage(bgimg);
+      }else{
+        bg.addImage(homeimg);
+      }
+      bg.scale = 3.3;
+      if(hr>=6 && hr<=21){
+        bg2.addImage(bgimg);
+      }else{
+        bg2.addImage(homeimg);
+      }
+      bg2.scale = 3.3;
+      spy.addImage(spy3img);
+      spy.x = 400;
+      spy.y = 200;
+      spy.scale = 0.9;
+  }
 
 //start of the running part
   if(gameState===PLAY){
     spawnCoins();
+    spy.addImage(spyimg);
+    spy.scale = 0.3;
     changeImagesWhenNeeded();
+    if(coincount>0){
+      bg.velocity.x = -(3 + 90*coincount/100);
+    }else{
+      bg.velocity.x = -3;
+    }
 
     score = score+1;
 
     if(bg.x<40){
-        bg.x = 400;
-        if(coincount>0){
-          bg.velocity.x = -(3 + 90*coincount/100);
-        }else{
-          bg.velocity.x = -3;
-        }
+        bg.x = 363;
+    }
+    bg.scale = 3.1;
+    bg2.scale = 3.1;
+
+    bg2.x = bg.x+720;
+    bg2.y = bg.y-28;
+
+    if(coincount>0){
+      Ob.setVelocityEach(-(3 + 90*coincount/100),0);
+    }else{
+      Ob.setVelocityEach(-3,0);
     }
 
-        bg2.x = bg.x+730;
+    if(coincount>0){
+        Guards.setVelocityEach(-(random(5,3) + 90*coincount/100),0);
+    }else{
+        Guards.setVelocityEach(-(random(5,3)),0);
+    }
       
     if(ground.x<0){
       ground.x = ground.width/2;
@@ -134,6 +176,7 @@ function draw() {
     if(Guards.isTouching(spy) && life>0){
         life=life-1;
         Guards.destroyEach();
+        spy.addImage(spy2img);
         clash.play();
         if(life===0){
           gameState=END;
@@ -253,6 +296,7 @@ function spawnObstacles(){
         obs.y = random(200,280);
         obs.width = r;
         obs.height = r2;
+        obs.shapeColor=color(random(176,0),random(96,0),0);
         Ob.add(obs);
     }
 }
@@ -270,23 +314,28 @@ function spawnobstacles2(){
       obs.y = random(320,400);
       obs.width = r;
       obs.height = r2;
+      obs.shapeColor=color(random(45,0),0,0);
       Ob.add(obs);
   }
 }
 
 function spawnCoins(){
-    if(frameCount%500===0){
+    if(frameCount%400===0){
         var r = random(30,350);
-        var coin = createSprite(800,200,20,20);
-        coin.y = r;
-        if(coincount>0){
-          coin.velocity.x = -(3 + 90*coincount/100);
-        }else{
-          coin.velocity.x = -3;
+        var r2 = random(5,10);
+        for (i=0;i<r2;i++){
+          var coin = createSprite(800,200,20,20);
+          coin.y = r;
+          if(coincount>0){
+            coin.velocity.x = -(3 + 90*coincount/100);
+          }else{
+            coin.velocity.x = -3;
+          }
+          coin.addImage(coinimg);
+          coin.scale = 0.3;
+          Coins.add(coin);
+          coin.x = coin.x+100;
         }
-        coin.addImage(coinimg);
-        coin.scale = 0.3;
-        Coins.add(coin);
     }
 }
 
@@ -325,6 +374,12 @@ function spawnEnemies(){
 }
 
 function mousePressed(){
+  if(gameState===START){
+    gameState = PLAY;
+    spy.x = 50;
+    spy.y = 330;
+  }
+
   if(gameState===PLAY){
     if(spy.y>200){
         spy.velocity.y = -15;
@@ -334,6 +389,12 @@ function mousePressed(){
 }
 
 function mouseReleased(){
+  if(gameState===START){
+    gameState = PLAY;
+    spy.x = 50;
+    spy.y = 330;
+  }
+
   if(gameState===PLAY){
     if(spy.y>200){
         spy.velocity.y = -15;
